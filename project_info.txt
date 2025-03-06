@@ -1,0 +1,76 @@
+# Simple LLM Chatbot v3 - Pre-Sales Assistant
+
+## Project Overview
+This project implements a pre-sales chatbot that leverages LangFlow, LiteLLM with OpenAI's GPT-4o-mini model, and Python to engage with potential clients, gather lead information, and provide consistent budget and timeline estimates using a database-driven approach rather than relying on the LLM to generate them.
+
+## Project Structure
+```
+simple_llm_chatbot_v3/
+├── brief/                  # Project brief and requirements
+├── docs/                   # Documentation
+│   ├── design/             # Design documents
+│   ├── api/                # API documentation
+│   └── test/               # Test documentation
+├── src/                    # Source code
+│   ├── backend/            # Python backend
+│   │   ├── main.py         # Main application entry point (FastAPI)
+│   │   ├── database.py     # Database models and operations
+│   │   ├── tools.py        # Budget & Timeline Tool implementation
+│   │   ├── api.py          # API endpoints
+│   │   └── config.py       # Configuration settings
+│   ├── langflow/           # LangFlow configuration
+│   │   └── flows/          # LangFlow flow definitions
+│   └── prompts/            # LLM prompts
+├── tests/                  # Test files
+├── .env.example            # Example environment variables
+├── requirements.txt        # Python dependencies
+├── .gitignore              # Git ignore file
+├── project_info.txt        # Project information and changelog
+└── README.md               # Project overview
+```
+
+## Requirements
+- Python 3.11
+- LangFlow (installed and run locally)
+- LiteLLM (using GPT-4o-mini model)
+- FastAPI
+- SQLite (for MVP)
+
+## Coding Standards
+1. **Naming Conventions**:
+   - Use snake_case for variables, functions, and file names
+   - Use PascalCase for class names
+   - Use UPPER_CASE for constants
+
+2. **Documentation**:
+   - All functions must have docstrings with purpose, parameters, return values, and examples
+   - All modules must have module-level docstrings
+
+3. **Error Handling**:
+   - Use try-except blocks for error handling
+   - Log all errors with appropriate context
+
+4. **Logging**:
+   - Log function entry, exit, and key events
+   - Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+5. **Testing**:
+   - Write unit tests for all functions
+   - Aim for high test coverage
+
+## Changelog
+- [2025-03-06] Project initialized
+- [2025-03-06] Created project structure
+- [2025-03-06] Created design documents:
+  - Implementation design
+  - Budget & Timeline Tool specification
+  - LangFlow configuration specification
+  - Python backend specification
+  - Implementation plan
+- [2025-03-06] Created API documentation
+- [2025-03-06] Created test documentation
+- [2025-03-06] Created system prompt for LLM
+- [2025-03-06] Updated design to use FastAPI, Python 3.11, and LiteLLM with GPT-4o-mini model
+- [2025-03-06] Updated implementation plan to use steps instead of days
+- [2025-03-06] Updated documentation to specify LangFlow will be installed and run locally
+- [2025-03-06] Added .gitignore file 

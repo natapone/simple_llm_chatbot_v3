@@ -1,0 +1,319 @@
+Below is a **comprehensive design document** for a **Pre-Sales Chatbot** MVP that leverages **LangFlow**, **LiteLLM**, and **Python** with a **Budget & Timeline Tool** integrated into the workflow. The goal is to gather leads and provide consistent, database-driven budget and timeline estimates rather than relying on the LLM to generate them independently.
+
+---
+
+# 1. Introduction
+
+The pre-sales chatbot aims to:
+1. **Engage potential clients** in a conversational manner.  
+2. **Capture essential lead data** (name, contact info, project requirements).  
+3. **Leverage a Budget & Timeline Tool** (database-driven) to provide reliable cost and duration estimates.  
+4. **Store and manage leads** for follow-up in a Python-based backend.
+
+This MVP will use:
+- **LangFlow** for designing and visualizing conversation flows.  
+- **LiteLLM** for reasoning (LLM-based conversation).  
+- **Python** for storing leads, hosting the Budget & Timeline Tool, and future integrations.
+
+---
+
+# 2. Functional Requirements
+
+1. **User Interaction (Chat Interface)**  
+   - The user can chat with the bot and provide project details.  
+   - The bot should greet, ask for name, contact info, and project requirements.
+
+2. **Requirement Collection**  
+   - The bot gathers the following data:  
+     - Name  
+     - Contact Information  
+     - Business or Project Description  
+     - Key Features/Scope  
+     - Desired Timeline  
+     - Budget Range (if known)
+
+3. **Budget & Timeline Estimation**  
+   - When the user asks for a budget or timeline estimate, the bot calls a **Budget & Timeline Tool** that retrieves typical costs and development timelines from a database or reference table.  
+   - The bot must present these estimates to the user.
+
+4. **Data Storage**  
+   - The system saves leads (including the user’s project type, contact info, and any retrieved estimates) in a simple database (e.g., SQLite).
+
+5. **Conversation Recap**  
+   - The bot provides a summary of all collected data in bullet points and confirms accuracy before ending the conversation.
+
+6. **Confirmation and Follow-Up**  
+   - The user is asked to confirm if they’re okay with follow-up communications.
+
+---
+
+# 3. Non-Functional Requirements
+
+1. **Usability**  
+   - The conversation flow should be easy to follow.  
+   - Minimal confusion or re-asking the same questions.
+
+2. **Maintainability**  
+   - The conversation flow and prompt logic should be modifiable without major code changes.  
+   - Database or data structures for storing project estimates and leads should be simple and well-documented.
+
+3. **Scalability**  
+   - The system should handle multiple concurrent conversations if needed.  
+   - Migrating from an SQLite database to a more robust DB (e.g., PostgreSQL) in the future should be straightforward.
+
+4. **Reliability**  
+   - The tool-based approach must ensure budget/timeline data is fact-based.  
+   - The system should handle unknown project types gracefully.
+
+5. **Privacy & Data Retention**  
+   - User contact information must be stored securely.  
+   - Only authorized personnel can access lead data.
+
+---
+
+# 4. High-Level Architecture
+
+```
+   ┌──────────────┐
+   │   Front-End   │ (Web or LangFlow UI)
+   └──────┬───────┘
+          │
+          │ (User messages)
+          ▼
+   ┌───────────────────┐
+   │   LangFlow (Flow) │
+   │  + LiteLLM (LLM)  │
+   └──────┬───────┬────┘
+          │       │ (Tool Call)
+          │       ▼
+          │  ┌───────────────────┐
+          │  │   Budget &       │
+          │  │ Timeline Tool    │
+          │  │ (Python + DB)    │
+          │  └───────────────────┘
+          │         (Estimates)
+          ▼
+   ┌────────────────────┐
+   │   Python Backend   │
+   │  (Lead Storage)    │
+   └────────────────────┘
+```
+
+**Key Components**:
+1. **LangFlow**: Manages conversation flow visually.  
+2. **LiteLLM**: Processes natural language, determines when to request data from the tool.  
+3. **Budget & Timeline Tool**: A Python-based lookup service that returns project-specific estimates.  
+4. **Backend Lead Storage**: Stores lead information (contact info, project details, final estimates).
+
+---
+
+# 5. Detailed Components
+
+## 5.1 LangFlow Conversation Flow
+
+1. **Start / Greeting Node**  
+   - Presents a welcoming message.  
+   - Introduces the bot’s purpose (pre-sales assistant).  
+
+2. **Collect Basic Info Node**  
+   - Asks for user name and contact (email or phone).  
+   - Stores responses in LangFlow memory.
+
+3. **Project Type & Requirements Node**  
+   - Prompts the user to describe their project type (e.g., e-commerce website, mobile app, CRM system).  
+   - Instructs the LLM to clarify essential features or special requirements.
+
+4. **Tool Invocation Node**  
+   - After the user specifies a project type, the LLM calls an external node or function that triggers the Budget & Timeline Tool in the Python backend.  
+   - The conversation flow may send a parameter like `project_type="mobile app"`.
+
+5. **Response with Estimates Node**  
+   - Receives the JSON (or structured data) from the tool (e.g., `"budget_range": "$5k–$8k"`, `"timeline": "3–4 months"`).  
+   - The LLM merges that into a natural language response for the user.
+
+6. **Recap & Confirmation Node**  
+   - Summarizes all the information in bullet points.  
+   - Asks the user to confirm if the details are correct and if they are comfortable with follow-up.
+
+7. **End Node / Handoff**  
+   - Calls a Python endpoint to store the lead data.  
+   - The conversation politely ends or offers next steps.
+
+## 5.2 LiteLLM
+
+- **System Prompt**: Defines the bot’s role: “You are a pre-sales assistant that calls a budget/timeline tool for factual estimates. Do not guess.”  
+- **User Prompts**: Contain the user’s messages and relevant context (project type, features, etc.).  
+- **Tool Call Instruction**: When the user asks for or the conversation logic requires a budget/timeline, the LLM is prompted to call the “Budget & Timeline Tool” with the recognized `project_type`.
+
+## 5.3 Budget & Timeline Tool
+
+- **Purpose**: Provide consistent data about typical budgets and timelines for known project categories.  
+- **Implementation**: A simple Python function or microservice that looks up values from a table called `project_estimates`.  
+- **Example Table**:  
+
+| project_type          | budget_range | typical_timeline |
+|-----------------------|--------------|------------------|
+| e-commerce website    | \$3k–\$6k    | 2–3 months       |
+| mobile restaurant app | \$5k–\$8k    | 3–4 months       |
+| CRM system            | \$4k–\$7k    | 4–6 months       |
+| chatbot integration   | \$2k–\$4k    | 2–3 months       |
+| custom logistics      | \$10k–\$20k  | 5–6 months       |
+
+- **Fallback**: If an exact `project_type` is not in the table, the tool returns a message like “No match found. Request more information.”
+
+## 5.4 Python Backend for Lead Storage
+
+- **Data Model**:  
+  - `leads` table or JSON structure:  
+    - `id` (auto-increment)  
+    - `name`  
+    - `contact`  
+    - `project_type`  
+    - `project_details` (features, special notes)  
+    - `estimated_budget` (from the tool)  
+    - `estimated_timeline` (from the tool)  
+    - `created_at` (timestamp)
+
+- **Endpoints**:  
+  - `/api/leads` (POST): Accepts new lead data from the chatbot.  
+  - `/api/getEstimate` (GET or POST): Used internally by the chatbot to retrieve budget/timeline data based on `project_type`.
+
+- **Implementation**: Minimal Flask or FastAPI app to:  
+  - Store leads in a local DB (SQLite for MVP).  
+  - Expose the `getEstimate` function for retrieving data.
+
+---
+
+# 6. Conversation Flow Example
+
+1. **Welcome**  
+   - “Hi there! I’m your pre-sales assistant. May I have your name and the best way to reach you?”
+
+2. **User Provides Info**  
+   - “I’m Linda. My email is [email protected].”
+
+3. **Bot Acknowledges**  
+   - “Thanks, Linda! Can you tell me about your project?”
+
+4. **User Describes Project**  
+   - “I want an e-commerce website to sell pastries.”
+
+5. **Bot Detects Project Type**  
+   - Bot: “Got it. So an e-commerce website for pastries. Let me get a typical budget and timeline...”
+
+6. **Tool Invocation**  
+   - LangFlow node calls `/api/getEstimate?project_type=e-commerce website`.
+
+7. **Tool Returns Data**  
+   - `budget_range = "$3k–$6k", typical_timeline = "2–3 months"`
+
+8. **Bot Responds**  
+   - “Typically, an e-commerce website costs around \$3k–\$6k and takes 2–3 months. Does that sound right for you?”
+
+9. **Recap & Confirmation**  
+   - “Here’s what I’ve gathered: [Name: Linda, Email: [email protected], Project: E-commerce website, Budget: \$3k–\$6k, Timeline: 2–3 months]. Is that correct? May we follow up?”
+
+10. **User Confirms**  
+   - “Yes, that’s correct.”
+
+11. **Bot Saves Lead & Ends**  
+   - Data is sent to `/api/leads`.
+
+---
+
+# 7. Implementation Plan (Step by Step, No Code)
+
+1. **Database Setup**  
+   - Create an SQLite database (or simple table) for `project_estimates` and `leads`.  
+   - Insert initial records into `project_estimates` (e.g., e-commerce website, mobile app, etc.).
+
+2. **Python Backend**  
+   - Create a minimal web service (Flask/FastAPI):  
+     - `/api/leads` to store lead data.  
+     - `/api/getEstimate` to return budget/timeline for a given `project_type`.
+
+3. **LangFlow Configuration**  
+   - Define your flow with nodes for greeting, collecting user data, clarifying project type, calling the Budget & Timeline Tool, and summarizing.  
+   - For the tool call, create a custom node or integration that makes an HTTP request to `/api/getEstimate`.
+
+4. **LiteLLM Prompts**  
+   - **System Prompt**: “You are a pre-sales assistant. You must call an external Budget & Timeline Tool for factual estimates. Do not guess.”  
+   - **User Prompt**: Dynamic content from conversation.  
+   - **Tool Use**: When the user asks or the conversation context calls for it, the LLM triggers the `BudgetTimelineTool`.
+
+5. **Testing**  
+   - Manually run through the conversation in LangFlow, simulating various project types.  
+   - Verify the correct budget range is retrieved.  
+   - Confirm that leads are stored correctly in the backend.
+
+6. **Deployment & Next Steps**  
+   - Once tested, host the Python service on a server or platform.  
+   - Optionally embed the chatbot in a web page or other user-facing interface.
+
+---
+
+# 8. Testing & Quality Assurance
+
+1. **Unit Testing**  
+   - Test the Python endpoints to ensure the correct data is returned for each `project_type`.  
+   - Test lead creation (insert a lead and verify in the database).
+
+2. **Flow Testing**  
+   - Validate the conversation flow in LangFlow with different user inputs:  
+     - Known project types (“e-commerce website”).  
+     - Unknown project types (“a VR shopping simulator”).  
+   - Check if the fallback mechanism works properly.
+
+3. **Integration Testing**  
+   - Ensure that calling the budget/timeline endpoint from LangFlow receives the correct JSON.  
+   - Verify that final data is posted to `/api/leads` correctly.
+
+4. **User Acceptance Testing**  
+   - Have a few test users run the chatbot and see if they get accurate, comprehensible estimates.  
+   - Make sure no confusing or contradictory answers appear.
+
+---
+
+# 9. Edge Cases & Fallbacks
+
+1. **User Doesn’t Provide Project Type**  
+   - The chatbot should politely re-ask or default to a broad category.  
+   - The tool might return a generic range or “Please clarify your project type.”
+
+2. **User Asks for Multiple Project Types**  
+   - The chatbot can handle multiple queries by storing them in memory.  
+   - Potentially call the tool multiple times.
+
+3. **No Matching Row in `project_estimates`**  
+   - The tool returns a fallback message.  
+   - The chatbot prompts the user to provide more details or disclaim that a custom estimate is needed.
+
+4. **Partial or Conflicting Requirements**  
+   - The LLM should handle clarifications gracefully.  
+   - Possibly store multiple feature sets and ask the user to confirm.
+
+---
+
+# 10. Future Expansion
+
+1. **Integration with CRM**  
+   - Automatically push leads into Salesforce, HubSpot, or other CRMs for seamless sales follow-up.
+
+2. **Refined Pricing Models**  
+   - Expand the `project_estimates` table to consider feature-level detail.  
+   - Add complexity multipliers (e.g., advanced features might raise the base cost).
+
+3. **Scheduling & Calendar Integration**  
+   - Offer an option to schedule a follow-up call or demo with a salesperson.
+
+4. **Multi-Channel Deployment**  
+   - Deploy the same conversation flow via Slack, WhatsApp, or a custom web chat widget.
+
+5. **Advanced AI Tools**  
+   - Provide the LLM with specialized “tools” for reading knowledge bases, scheduling calls, or generating detailed proposals on the fly.
+
+---
+
+## Conclusion
+
+This design provides a **conversational, LLM-driven experience** while ensuring **accurate budget and timeline data** by calling an external **Budget & Timeline Tool**. Storing leads in a Python backend enables future expansions and integrations. By leveraging **LangFlow** for the conversation flow and **LiteLLM** for reasoning, you keep the system flexible and maintainable, while still enforcing reliability in the critical domain of cost estimation.
