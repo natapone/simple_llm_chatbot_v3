@@ -60,40 +60,32 @@
       },
       {
         "id": "budget_timeline_tool",
-        "type": "Tool",
+        "type": "BudgetTimelineTool",
         "position": {
           "x": 700,
           "y": 300
         },
         "data": {
           "name": "Budget & Timeline Tool",
-          "tool_name": "BudgetTimelineTool",
-          "api_endpoint": "GET /api/estimates?project_type={project_type}",
-          "parameters": {
-            "project_type": "{project_type}"
-          }
+          "project_type": "{project_type}"
         }
       },
       {
         "id": "store_lead_tool",
-        "type": "Tool",
+        "type": "StoreLeadTool",
         "position": {
           "x": 700,
           "y": 400
         },
         "data": {
           "name": "Store Lead",
-          "tool_name": "StoreLead",
-          "api_endpoint": "POST /api/leads",
-          "parameters": {
-            "name": "{name}",
-            "contact": "{contact}",
-            "project_type": "{project_type}",
-            "project_details": "{project_details}",
-            "estimated_budget": "{estimated_budget}",
-            "estimated_timeline": "{estimated_timeline}",
-            "follow_up_consent": "{follow_up_consent}"
-          }
+          "name": "{name}",
+          "contact": "{contact}",
+          "project_type": "{project_type}",
+          "project_details": "{project_details}",
+          "estimated_budget": "{estimated_budget}",
+          "estimated_timeline": "{estimated_timeline}",
+          "follow_up_consent": "{follow_up_consent}"
         }
       },
       {
@@ -106,36 +98,68 @@
         "data": {
           "name": "Chat Output"
         }
+      },
+      {
+        "id": "agent",
+        "type": "ConversationalAgent",
+        "position": {
+          "x": 400,
+          "y": 400
+        },
+        "data": {
+          "name": "Conversational Agent",
+          "prefix": "You are a pre-sales assistant for a software development company.",
+          "suffix": "Remember to be professional, friendly, and helpful at all times.",
+          "verbose": true
+        }
       }
     ],
     "edges": [
       {
         "id": "edge-1",
         "source": "chat_input",
-        "target": "llm_model",
+        "target": "agent",
         "type": "default"
       },
       {
         "id": "edge-2",
         "source": "memory",
-        "target": "llm_model",
+        "target": "agent",
         "type": "default"
       },
       {
         "id": "edge-3",
         "source": "system_prompt",
-        "target": "llm_model",
+        "target": "agent",
         "type": "default"
       },
       {
         "id": "edge-4",
         "source": "llm_model",
-        "target": "chat_output",
+        "target": "agent",
         "type": "default"
       },
       {
         "id": "edge-5",
-        "source": "llm_model",
+        "source": "budget_timeline_tool",
+        "target": "agent",
+        "type": "default"
+      },
+      {
+        "id": "edge-6",
+        "source": "store_lead_tool",
+        "target": "agent",
+        "type": "default"
+      },
+      {
+        "id": "edge-7",
+        "source": "agent",
+        "target": "chat_output",
+        "type": "default"
+      },
+      {
+        "id": "edge-8",
+        "source": "agent",
         "target": "memory",
         "type": "default"
       }

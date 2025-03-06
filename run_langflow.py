@@ -2,13 +2,20 @@
 """
 Run script for LangFlow.
 
-This script runs LangFlow locally.
+This script runs LangFlow locally and registers our custom tools.
 """
 
 import os
 import logging
 import subprocess
+import sys
 from dotenv import load_dotenv
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Import our tools registration module
+from src.langflow.langflow_tools import register_tools
 
 # Load environment variables
 load_dotenv()
@@ -26,6 +33,15 @@ LANGFLOW_HOST = os.getenv('LANGFLOW_HOST', 'http://localhost').replace('http://'
 LANGFLOW_PORT = os.getenv('LANGFLOW_PORT', '7860')
 
 if __name__ == "__main__":
+    # Register our custom tools with LangFlow
+    logger.info("Registering custom tools with LangFlow")
+    try:
+        register_tools()
+        logger.info("Custom tools registered successfully")
+    except Exception as e:
+        logger.error(f"Error registering custom tools: {e}")
+        logger.warning("Continuing with LangFlow startup without custom tools")
+    
     logger.info(f"Starting LangFlow on {LANGFLOW_HOST}:{LANGFLOW_PORT}")
     
     try:

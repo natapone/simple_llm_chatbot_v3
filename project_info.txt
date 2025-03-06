@@ -105,4 +105,14 @@ simple_llm_chatbot_v3/
 - [2025-03-06] Implemented memory-enabled chatbot using LangChain's ConversationBufferMemory
 - [2025-03-06] Updated to use modern LangChain RunnableSequence approach for the chatbot
 - [2025-03-06] Added Markdown rendering support to the web interface for rich formatted responses
-- [2025-03-06] Updated documentation with details about Markdown rendering capabilities 
+- [2025-03-06] Updated documentation with details about Markdown rendering capabilities
+- [2025-03-06] Enhanced web interface with responsive design, dark mode support, loading states, and improved error handling
+- [2025-03-06] Updated documentation with details about the new design features and improvements
+- [2025-03-06] Implemented LangChain tool wrappers for Budget & Timeline Tool and Store Lead Tool
+- [2025-03-06] Created custom LangFlow tool components for direct integration with LangFlow UI
+- [2025-03-06] Updated LangFlow flow definition to use custom tool components
+- [2025-03-06] Updated documentation with details about custom tool implementation and usage
+- [2025-03-06] Created dedicated web interface for Presales Chatbot with automatic tool integration
+- [2025-03-06] Implemented lead information extraction from conversation context
+- [2025-03-06] Added run_presales_chatbot.py script to run both backend API and presales web interface
+- [2025-03-06] Updated documentation with details about the presales chatbot web interface 

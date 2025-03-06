@@ -10,7 +10,13 @@ import os
 import json
 from dotenv import load_dotenv
 from litellm import completion
-from .database import get_all_project_types, get_estimate_by_project_type
+from .database import get_all_project_types, get_estimate_by_project_type, store_lead
+from typing import Dict, Any, Optional, List, Union, ClassVar
+from pydantic import BaseModel, Field
+
+# LangChain imports for tool compatibility
+from langchain.tools import BaseTool
+from langchain.callbacks.manager import CallbackManagerForToolRun
 
 # Load environment variables
 load_dotenv()
@@ -158,4 +164,80 @@ def get_estimate(project_type):
             "budget_range": "Unavailable",
             "typical_timeline": "Unavailable",
             "message": "An error occurred while retrieving the estimate. Please try again later."
-        } 
+        }
+
+
+# LangChain Tool Implementations for LangFlow compatibility
+
+class BudgetTimelineInput(BaseModel):
+    """Input for the Budget & Timeline Tool."""
+    project_type: str = Field(..., description="The type of project (e.g., e-commerce website, mobile app)")
+
+
+class BudgetTimelineTool(BaseTool):
+    """Tool for getting budget and timeline estimates for a project type."""
+    name: ClassVar[str] = "budget_timeline_tool"
+    description: ClassVar[str] = "Get budget and timeline estimates for a project type"
+    args_schema: ClassVar[type] = BudgetTimelineInput
+    
+    def _run(self, project_type: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> Dict[str, Any]:
+        """Run the tool."""
+        logger.info(f"BudgetTimelineTool called with project_type: {project_type}")
+        return get_estimate(project_type)
+
+
+class StoreLeadInput(BaseModel):
+    """Input for the Store Lead Tool."""
+    name: str = Field(..., description="The name of the lead")
+    contact: str = Field(..., description="The contact information of the lead")
+    project_type: str = Field(..., description="The type of project")
+    project_details: Optional[str] = Field(None, description="Additional details about the project")
+    estimated_budget: Optional[str] = Field(None, description="The estimated budget range")
+    estimated_timeline: Optional[str] = Field(None, description="The estimated timeline")
+    follow_up_consent: bool = Field(False, description="Whether the lead has consented to follow-up")
+
+
+class StoreLeadTool(BaseTool):
+    """Tool for storing lead information in the database."""
+    name: ClassVar[str] = "store_lead_tool"
+    description: ClassVar[str] = "Store lead information in the database"
+    args_schema: ClassVar[type] = StoreLeadInput
+    
+    def _run(
+        self,
+        name: str,
+        contact: str,
+        project_type: str,
+        project_details: Optional[str] = None,
+        estimated_budget: Optional[str] = None,
+        estimated_timeline: Optional[str] = None,
+        follow_up_consent: bool = False,
+        run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> Dict[str, Any]:
+        """Run the tool."""
+        logger.info(f"StoreLeadTool called with name: {name}, contact: {contact}")
+        
+        lead_id = store_lead(
+            name=name,
+            contact=contact,
+            project_type=project_type,
+            project_details=project_details,
+            estimated_budget=estimated_budget,
+            estimated_timeline=estimated_timeline,
+            follow_up_consent=follow_up_consent
+        )
+        
+        if not lead_id:
+            return {"status": "error", "message": "Failed to store lead"}
+        
+        return {"status": "success", "id": lead_id}
+
+
+# Create tool instances for direct use
+budget_timeline_tool = BudgetTimelineTool()
+store_lead_tool = StoreLeadTool()
+
+# Function to get all available tools
+def get_tools() -> List[BaseTool]:
+    """Get all available tools for use with LangFlow."""
+    return [budget_timeline_tool, store_lead_tool] 
