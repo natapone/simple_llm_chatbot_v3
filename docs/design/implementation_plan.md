@@ -106,14 +106,14 @@ This document outlines the step-by-step implementation plan for the pre-sales ch
    - Implement get_estimate function
    - Implement exact matching for project types
 
-**Step 2:** Implement fuzzy matching algorithm
-   - Use fuzzywuzzy for string similarity
-   - Set appropriate threshold for matches
-   - Handle edge cases and unknown project types
+**Step 2:** Implement LiteLLM integration for project type extraction
+   - Use LiteLLM with GPT-4o-mini to extract project type from user input
+   - Implement prompt engineering to guide the model in extracting the correct project type
+   - Map extracted project type to database entries
 
 **Step 3:** Test tool functionality
    - Create unit tests for exact matching
-   - Create unit tests for fuzzy matching
+   - Create unit tests for LiteLLM project type extraction
    - Test with various project types
 
 #### 2.2.2 API Endpoints for the Tool
@@ -221,7 +221,7 @@ This document outlines the step-by-step implementation plan for the pre-sales ch
 
 2. Budget & Timeline Tool
    - Test exact matching
-   - Test fuzzy matching
+   - Test LiteLLM project type extraction
    - Test error handling
 
 3. API endpoints
@@ -302,7 +302,7 @@ This document outlines the step-by-step implementation plan for the pre-sales ch
    - Mitigation: Implement proper authentication and data encryption
 
 4. **Tool accuracy**: The Budget & Timeline Tool may not provide accurate estimates
-   - Mitigation: Refine the fuzzy matching algorithm and update the database with accurate estimates
+   - Mitigation: Optimize LiteLLM prompts for accurate project type extraction and update the database with accurate estimates
 
 5. **Model reliability**: GPT-4o-mini may not always provide consistent responses
    - Mitigation: Implement robust system prompts and fallback mechanisms
@@ -322,7 +322,7 @@ This document outlines the step-by-step implementation plan for the pre-sales ch
 1. User authentication for admin access
 2. Dashboard for viewing and managing leads
 3. Email notifications for new leads
-4. Improved fuzzy matching algorithm
+4. Enhanced LiteLLM prompts for project type extraction
 5. Enhanced logging and monitoring
 
 ### 6.2 Medium-term Enhancements (3-6 months)

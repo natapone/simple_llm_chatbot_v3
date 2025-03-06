@@ -7,6 +7,7 @@ A pre-sales chatbot that leverages LangFlow, LiteLLM with GPT-4o-mini model, and
 - Conversational interface for engaging with potential clients
 - Collection of essential lead data (name, contact info, project requirements)
 - Database-driven Budget & Timeline Tool for reliable cost and duration estimates
+- LiteLLM-powered project type extraction for accurate matching
 - Lead storage and management for follow-up
 - Consistent and fact-based responses
 
@@ -30,6 +31,11 @@ simple_llm_chatbot_v3/
 │   │   └── flows/          # LangFlow flow definitions
 │   └── prompts/            # LLM prompts
 ├── tests/                  # Test files
+│   ├── test_database.py    # Tests for database operations
+│   ├── test_tools.py       # Tests for Budget & Timeline Tool
+│   └── test_api.py         # Tests for API endpoints
+├── run.py                  # Script to run the application
+├── run_tests.py            # Script to run the tests
 ├── .env.example            # Example environment variables
 ├── requirements.txt        # Python dependencies
 ├── .gitignore              # Git ignore file
@@ -69,33 +75,84 @@ simple_llm_chatbot_v3/
    cp .env.example .env
    ```
 
-5. Edit the .env file with your configuration.
+5. Edit the .env file with your configuration:
+   - Set your LiteLLM API key
+   - Set your LangFlow API key
+   - Configure other settings as needed
 
 ## Usage
 
 ### Running the Backend
 
+You can run the backend using the provided run.py script:
+
 ```bash
-cd src/backend
-uvicorn main:app --reload
+python run.py
+```
+
+Or directly with uvicorn:
+
+```bash
+uvicorn src.backend.main:app --host 0.0.0.0 --port 8001 --reload
 ```
 
 ### Running LangFlow Locally
 
 ```bash
-langflow run
+langflow run --host 0.0.0.0 --port 7860
+```
+
+### Running the Web Interface
+
+You can run the web interface that loads the LangFlow Memory Chatbot configuration:
+
+```bash
+python run_web_chatbot.py
+```
+
+This will start both the backend API and the web interface. The web interface will be available at:
+
+```
+http://localhost:8000
+```
+
+The web interface provides a user-friendly chat experience with memory capabilities, allowing the chatbot to reference previous messages in the conversation.
+
+### Accessing the API
+
+The API will be available at:
+```
+http://localhost:8001/api
+```
+
+API documentation is available at:
+```
+http://localhost:8001/docs
 ```
 
 ### Accessing the Chatbot
 
-Open your browser and navigate to:
+After starting LangFlow, open your browser and navigate to:
 ```
 http://localhost:7860
+```
+
+Then import the flow definition from:
+```
+src/langflow/flows/presales_chatbot_flow.json
 ```
 
 ## Development
 
 ### Running Tests
+
+You can run the tests using the provided run_tests.py script:
+
+```bash
+python run_tests.py
+```
+
+Or directly with pytest:
 
 ```bash
 pytest tests/
@@ -103,17 +160,20 @@ pytest tests/
 
 ### Adding New Project Types
 
-To add new project types to the Budget & Timeline Tool, update the project_estimates table in the database:
+To add new project types to the Budget & Timeline Tool, you can use the Python shell:
 
 ```python
-# Example code to add a new project type
-from src.backend.database import add_project_estimate
+from src.backend.database import Session, ProjectEstimate
 
-add_project_estimate(
+session = Session()
+new_project = ProjectEstimate(
     project_type="new project type",
     budget_range="$X-$Y",
     typical_timeline="A-B months"
 )
+session.add(new_project)
+session.commit()
+session.close()
 ```
 
 ## License

@@ -22,6 +22,11 @@ simple_llm_chatbot_v3/
 │   │   └── flows/          # LangFlow flow definitions
 │   └── prompts/            # LLM prompts
 ├── tests/                  # Test files
+│   ├── test_database.py    # Tests for database operations
+│   ├── test_tools.py       # Tests for Budget & Timeline Tool
+│   └── test_api.py         # Tests for API endpoints
+├── run.py                  # Script to run the application
+├── run_tests.py            # Script to run the tests
 ├── .env.example            # Example environment variables
 ├── requirements.txt        # Python dependencies
 ├── .gitignore              # Git ignore file
@@ -73,4 +78,31 @@ simple_llm_chatbot_v3/
 - [2025-03-06] Updated design to use FastAPI, Python 3.11, and LiteLLM with GPT-4o-mini model
 - [2025-03-06] Updated implementation plan to use steps instead of days
 - [2025-03-06] Updated documentation to specify LangFlow will be installed and run locally
-- [2025-03-06] Added .gitignore file 
+- [2025-03-06] Added .gitignore file
+- [2025-03-06] Created database design document
+- [2025-03-06] Implemented database.py with SQLAlchemy models and utility functions
+- [2025-03-06] Implemented tools.py with Budget & Timeline Tool and fuzzy matching
+- [2025-03-06] Implemented config.py for application configuration
+- [2025-03-06] Implemented api.py with API endpoints
+- [2025-03-06] Implemented main.py with FastAPI application
+- [2025-03-06] Created LangFlow flow definition for the pre-sales chatbot
+- [2025-03-06] Created test files for database, tools, and API
+- [2025-03-06] Created run.py and run_tests.py scripts
+- [2025-03-06] Replaced fuzzy matching with LiteLLM for project type extraction
+- [2025-03-06] Updated implementation plan to reflect the use of LiteLLM for project type extraction
+- [2025-03-06] Updated tests to test LiteLLM project type extraction instead of fuzzy matching
+- [2025-03-06] Updated SQLAlchemy imports to use modern approach
+- [2025-03-06] Replaced FastAPI on_event handlers with lifespan context manager
+- [2025-03-06] Removed unused FUZZY_MATCH_THRESHOLD configuration
+- [2025-03-06] Created run_langflow.py script to run LangFlow locally
+- [2025-03-06] Created test_langflow.py to test LangFlow integration
+- [2025-03-06] Created LangFlow setup and usage documentation
+- [2025-03-06] Improved LangFlow flow with modern components (ChatInput, Memory, Prompt, LLMModel, Tool, ChatOutput)
+- [2025-03-06] Updated LangFlow documentation to explain the new flow structure
+- [2025-03-06] Implemented web interface for LangFlow Memory Chatbot
+- [2025-03-06] Created run_web_chatbot.py script to run both backend API and web interface
+- [2025-03-06] Updated documentation with web interface setup and usage instructions
+- [2025-03-06] Implemented memory-enabled chatbot using LangChain's ConversationBufferMemory
+- [2025-03-06] Updated to use modern LangChain RunnableSequence approach for the chatbot
+- [2025-03-06] Added Markdown rendering support to the web interface for rich formatted responses
+- [2025-03-06] Updated documentation with details about Markdown rendering capabilities 

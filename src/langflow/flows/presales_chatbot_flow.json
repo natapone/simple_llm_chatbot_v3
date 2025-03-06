@@ -1,0 +1,198 @@
+{
+  "description": "Pre-sales chatbot flow for collecting lead information and providing budget and timeline estimates",
+  "name": "Pre-Sales Chatbot",
+  "data": {
+    "nodes": [
+      {
+        "id": "chat_input",
+        "type": "ChatInput",
+        "position": {
+          "x": 100,
+          "y": 100
+        },
+        "data": {
+          "name": "Chat Input",
+          "should_store_message": true,
+          "sender": "User"
+        }
+      },
+      {
+        "id": "memory",
+        "type": "Memory",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "data": {
+          "name": "Conversation Memory",
+          "session_id": "",
+          "memory_type": "chat_message_history"
+        }
+      },
+      {
+        "id": "system_prompt",
+        "type": "Prompt",
+        "position": {
+          "x": 300,
+          "y": 200
+        },
+        "data": {
+          "name": "System Prompt",
+          "template": "You are a pre-sales assistant for a software development company. Your role is to:\n\n1. Collect lead information (name, contact, project details)\n2. Identify the project type\n3. Call the Budget & Timeline Tool for accurate estimates\n4. Summarize the conversation\n5. Ask for follow-up consent\n\nIMPORTANT GUIDELINES:\n\n1. Be professional, friendly, and helpful at all times.\n2. Always collect the client's name and contact information early in the conversation.\n3. Ask clarifying questions to understand the project requirements.\n4. Do NOT make up budget or timeline estimates. Always use the Budget & Timeline Tool.\n5. When the client asks about budget or timeline, call the Budget & Timeline Tool with the project type.\n6. Present budget and timeline estimates in a natural way, explaining that these are typical ranges.\n7. At the end of the conversation, summarize all collected information in bullet points.\n8. Ask for confirmation and follow-up consent.\n9. Thank the client for their time and interest."
+        }
+      },
+      {
+        "id": "llm_model",
+        "type": "LLMModel",
+        "position": {
+          "x": 500,
+          "y": 300
+        },
+        "data": {
+          "name": "LLM Model",
+          "model_name": "gpt-4o-mini",
+          "temperature": 0.7,
+          "max_tokens": 1024,
+          "top_p": 1,
+          "frequency_penalty": 0,
+          "presence_penalty": 0
+        }
+      },
+      {
+        "id": "budget_timeline_tool",
+        "type": "Tool",
+        "position": {
+          "x": 700,
+          "y": 300
+        },
+        "data": {
+          "name": "Budget & Timeline Tool",
+          "tool_name": "BudgetTimelineTool",
+          "api_endpoint": "GET /api/estimates?project_type={project_type}",
+          "parameters": {
+            "project_type": "{project_type}"
+          }
+        }
+      },
+      {
+        "id": "store_lead_tool",
+        "type": "Tool",
+        "position": {
+          "x": 700,
+          "y": 400
+        },
+        "data": {
+          "name": "Store Lead",
+          "tool_name": "StoreLead",
+          "api_endpoint": "POST /api/leads",
+          "parameters": {
+            "name": "{name}",
+            "contact": "{contact}",
+            "project_type": "{project_type}",
+            "project_details": "{project_details}",
+            "estimated_budget": "{estimated_budget}",
+            "estimated_timeline": "{estimated_timeline}",
+            "follow_up_consent": "{follow_up_consent}"
+          }
+        }
+      },
+      {
+        "id": "chat_output",
+        "type": "ChatOutput",
+        "position": {
+          "x": 500,
+          "y": 500
+        },
+        "data": {
+          "name": "Chat Output"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-1",
+        "source": "chat_input",
+        "target": "llm_model",
+        "type": "default"
+      },
+      {
+        "id": "edge-2",
+        "source": "memory",
+        "target": "llm_model",
+        "type": "default"
+      },
+      {
+        "id": "edge-3",
+        "source": "system_prompt",
+        "target": "llm_model",
+        "type": "default"
+      },
+      {
+        "id": "edge-4",
+        "source": "llm_model",
+        "target": "chat_output",
+        "type": "default"
+      },
+      {
+        "id": "edge-5",
+        "source": "llm_model",
+        "target": "memory",
+        "type": "default"
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "BudgetTimelineTool",
+      "description": "Get budget and timeline estimates for a project type",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project_type": {
+            "type": "string",
+            "description": "The type of project (e.g., e-commerce website, mobile app)"
+          }
+        },
+        "required": ["project_type"]
+      }
+    },
+    {
+      "name": "StoreLead",
+      "description": "Store lead information in the database",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the lead"
+          },
+          "contact": {
+            "type": "string",
+            "description": "The contact information of the lead"
+          },
+          "project_type": {
+            "type": "string",
+            "description": "The type of project"
+          },
+          "project_details": {
+            "type": "string",
+            "description": "Additional details about the project"
+          },
+          "estimated_budget": {
+            "type": "string",
+            "description": "The estimated budget range"
+          },
+          "estimated_timeline": {
+            "type": "string",
+            "description": "The estimated timeline"
+          },
+          "follow_up_consent": {
+            "type": "boolean",
+            "description": "Whether the lead has consented to follow-up"
+          }
+        },
+        "required": ["name", "contact", "project_type"]
+      }
+    }
+  ]
+} 
