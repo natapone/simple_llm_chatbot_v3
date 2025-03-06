@@ -1,185 +1,157 @@
 # Simple LLM Chatbot v3 - Pre-Sales Assistant
 
-A pre-sales chatbot that leverages LangFlow, LiteLLM with GPT-4o-mini model, and Python to engage with potential clients, gather lead information, and provide consistent budget and timeline estimates using a database-driven approach.
+A pre-sales chatbot that leverages LangFlow, LiteLLM with OpenAI's GPT-4o-mini model, and Python to engage with potential clients, gather lead information, and provide consistent budget and timeline estimates.
 
 ## Features
 
-- Conversational interface for engaging with potential clients
-- Collection of essential lead data (name, contact info, project requirements)
-- Database-driven Budget & Timeline Tool for reliable cost and duration estimates
-- LiteLLM-powered project type extraction for accurate matching
-- Lead storage and management for follow-up
-- Consistent and fact-based responses
+- **Memory-Enabled Chat**: Maintains conversation history for context-aware responses
+- **Budget & Timeline Tool**: Provides accurate estimates based on project type
+- **Lead Information Extraction**: Automatically extracts lead information from conversations
+- **Markdown Rendering**: Supports rich formatted responses
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Mode Support**: Includes light/dark mode toggle with system preference detection
+- **Multiple Chatbot Options**: Choose between the Memory Chatbot and Presales Chatbot
 
-## Project Structure
-
-```
-simple_llm_chatbot_v3/
-├── brief/                  # Project brief and requirements
-├── docs/                   # Documentation
-│   ├── design/             # Design documents
-│   ├── api/                # API documentation
-│   └── test/               # Test documentation
-├── src/                    # Source code
-│   ├── backend/            # Python backend
-│   │   ├── main.py         # Main application entry point (FastAPI)
-│   │   ├── database.py     # Database models and operations
-│   │   ├── tools.py        # Budget & Timeline Tool implementation
-│   │   ├── api.py          # API endpoints
-│   │   └── config.py       # Configuration settings
-│   ├── langflow/           # LangFlow configuration
-│   │   └── flows/          # LangFlow flow definitions
-│   └── prompts/            # LLM prompts
-├── tests/                  # Test files
-│   ├── test_database.py    # Tests for database operations
-│   ├── test_tools.py       # Tests for Budget & Timeline Tool
-│   └── test_api.py         # Tests for API endpoints
-├── run.py                  # Script to run the application
-├── run_tests.py            # Script to run the tests
-├── .env.example            # Example environment variables
-├── requirements.txt        # Python dependencies
-├── .gitignore              # Git ignore file
-├── project_info.txt        # Project information and changelog
-└── README.md               # Project overview
-```
-
-## Requirements
-
-- Python 3.11
-- LangFlow (installed and run locally)
-- LiteLLM with GPT-4o-mini model
-- FastAPI
-- SQLite (for MVP)
-
-## Setup
+## Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/simple_llm_chatbot_v3.git
-   cd simple_llm_chatbot_v3
-   ```
+```bash
+git clone https://github.com/yourusername/simple_llm_chatbot_v3.git
+cd simple_llm_chatbot_v3
+```
 
 2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
 3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Create a .env file:
-   ```bash
-   cp .env.example .env
-   ```
-
-5. Edit the .env file with your configuration:
-   - Set your LiteLLM API key
-   - Set your LangFlow API key
-   - Configure other settings as needed
-
-## Usage
-
-### Running the Backend
-
-You can run the backend using the provided run.py script:
-
 ```bash
-python run.py
+pip install -r requirements.txt
 ```
 
-Or directly with uvicorn:
-
-```bash
-uvicorn src.backend.main:app --host 0.0.0.0 --port 8001 --reload
+4. Create a `.env` file based on `.env.example` and add your API keys:
+```
+LITELLM_API_KEY=your_openai_api_key
 ```
 
-### Running LangFlow Locally
+## Run Scripts Overview
 
-```bash
-langflow run --host 0.0.0.0 --port 7860
-```
+The project includes several run scripts for different purposes:
 
-### Running the Web Interface
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `run.py` | Runs the FastAPI backend application | Used by other scripts, can be run directly for backend only |
+| `run_web_chatbot.py` | Runs the Memory Chatbot web interface and backend | Main entry point for Memory Chatbot |
+| `run_presales_chatbot.py` | Runs the Presales Chatbot web interface and backend | Main entry point for Presales Chatbot |
+| `run_langflow.py` | Runs LangFlow for editing chatbot flows | Used for flow development and customization |
+| `run_tests.py` | Runs all tests in the project | Used for testing and quality assurance |
 
-You can run the web interface that loads the LangFlow Memory Chatbot configuration:
+## Running the Chatbots
+
+### Option 1: Memory Chatbot
+
+The Memory Chatbot is a general-purpose chatbot that maintains conversation history.
 
 ```bash
 python run_web_chatbot.py
 ```
 
-This will start both the backend API and the web interface. The web interface will be available at:
+This will start:
+- The backend API on port 8001
+- The Memory Chatbot web interface on port 8000
 
-```
-http://localhost:8000
-```
+Access the Memory Chatbot at: http://localhost:8000
 
-The web interface provides a user-friendly chat experience with memory capabilities, allowing the chatbot to reference previous messages in the conversation.
+### Option 2: Presales Chatbot
 
-### Accessing the API
+The Presales Chatbot is specifically designed for lead generation and providing budget and timeline estimates.
 
-The API will be available at:
-```
-http://localhost:8001/api
-```
-
-API documentation is available at:
-```
-http://localhost:8001/docs
+```bash
+python run_presales_chatbot.py
 ```
 
-### Accessing the Chatbot
+This will start:
+- The backend API on port 8001
+- The Presales Chatbot web interface on port 8000
 
-After starting LangFlow, open your browser and navigate to:
+Access the Presales Chatbot at: http://localhost:8000
+
+### Running the Backend API Only
+
+If you need to run just the backend API (for development or testing):
+
+```bash
+python run.py
 ```
-http://localhost:7860
+
+This will start:
+- The backend API on port 8001 (or the port specified in your .env file)
+
+### Running LangFlow
+
+To run LangFlow for editing the chatbot flows:
+
+```bash
+python run_langflow.py
 ```
 
-Then import the flow definition from:
-```
-src/langflow/flows/presales_chatbot_flow.json
-```
+Access LangFlow at: http://localhost:7860
 
-## Development
+## Chatbot Flows
 
-### Running Tests
+### Memory Chatbot Flow
 
-You can run the tests using the provided run_tests.py script:
+The Memory Chatbot uses the `LangFlow_Memory_Chatbot.json` flow, which includes:
+- Chat Input
+- Memory
+- Prompt
+- OpenAI Model
+- Chat Output
+
+### Presales Chatbot Flow
+
+The Presales Chatbot uses the `presales_chatbot_flow.json` flow, which includes:
+- Chat Input
+- Memory
+- System Prompt
+- LLM Model
+- Budget & Timeline Tool
+- Store Lead Tool
+- Chat Output
+
+## Documentation
+
+For more detailed documentation, see the `/docs` directory:
+
+- [LangFlow Setup](docs/langflow_setup.md): Instructions for setting up and using LangFlow
+- [API Documentation](docs/api/README.md): Documentation for the API endpoints
+- [Design Documents](docs/design/README.md): Design documents for the project
+- [Development Journey](docs/development_journey.md): Comprehensive chronicle of the project's development process
+
+## Testing
+
+Run the tests with:
 
 ```bash
 python run_tests.py
 ```
 
-Or directly with pytest:
+This will execute all tests in the `tests` directory and display the results.
+
+## Project Maintenance
+
+To keep the project clean and optimized:
 
 ```bash
-pytest tests/
-```
+# Remove Python cache files
+find ./src -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-### Adding New Project Types
-
-To add new project types to the Budget & Timeline Tool, you can use the Python shell:
-
-```python
-from src.backend.database import Session, ProjectEstimate
-
-session = Session()
-new_project = ProjectEstimate(
-    project_type="new project type",
-    budget_range="$X-$Y",
-    typical_timeline="A-B months"
-)
-session.add(new_project)
-session.commit()
-session.close()
+# Remove temporary files
+find . -name "*.pyc" -o -name "*.pyo" -o -name ".DS_Store" | grep -v "venv" | xargs rm -f
 ```
 
 ## License
 
-[MIT License](LICENSE)
-
-## Contributors
-
-- Your Name <your.email@example.com>
+This project is licensed under the MIT License - see the LICENSE file for details.

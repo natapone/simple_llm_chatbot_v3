@@ -17,7 +17,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Depends, H
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 # Import LangChain components
@@ -93,7 +93,7 @@ def build_chain_from_langflow(flow_config, session_id: str):
             temperature = node["data"]["node"]["template"]["temperature"]["value"]
             break
     
-    # Create chat message history instead of ConversationBufferMemory
+    # Create chat message history
     chat_history = ChatMessageHistory()
     
     # Create LLM
@@ -440,7 +440,7 @@ async def get_chat_page(request: Request):
     <body>
         <div class="chat-container">
             <div class="chat-header">
-                <h2>LangFlow Memory Chatbot</h2>
+                <h2>Memory Chatbot</h2>
                 <button class="theme-toggle" id="theme-toggle">🌓</button>
             </div>
             <div class="chat-messages" id="chat-messages">

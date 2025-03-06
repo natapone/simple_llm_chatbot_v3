@@ -2,6 +2,24 @@
 
 This document provides detailed information about the API endpoints available in the pre-sales chatbot backend.
 
+## Running the API
+
+The API can be run using the `run.py` script:
+
+```bash
+python run.py
+```
+
+This will start the FastAPI application on the host and port specified in your environment variables (defaults to 0.0.0.0:8001).
+
+You can also specify the host and port directly:
+
+```bash
+python run.py --host 127.0.0.1 --port 8080
+```
+
+The API is also automatically started when running either `run_web_chatbot.py` or `run_presales_chatbot.py`.
+
 ## Base URL
 
 All endpoints are relative to the base URL:

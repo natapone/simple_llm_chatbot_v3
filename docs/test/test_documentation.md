@@ -18,6 +18,28 @@ Integration tests focus on testing the interaction between components. These tes
 
 End-to-end tests focus on testing the complete system from the user's perspective. These tests ensure that the system as a whole functions correctly.
 
+## Running Tests
+
+Tests can be run using the `run_tests.py` script:
+
+```bash
+python run_tests.py
+```
+
+This script uses pytest to run all tests in the `tests` directory and displays the results.
+
+You can also run specific tests by providing the path to the test file:
+
+```bash
+python -m pytest tests/test_database.py -v
+```
+
+Or run tests with specific markers:
+
+```bash
+python -m pytest -m "database" -v
+```
+
 ## Test Cases
 
 ### Unit Tests

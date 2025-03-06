@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 """
-Run script for Web Chatbot.
+Run script for LangFlow Memory Chatbot Web Interface.
 
-This script runs both the backend API and the web interface for the chatbot.
+This script runs both the backend API and the web interface for the memory chatbot.
 """
 
 import os
 import logging
+import asyncio
 import subprocess
+import sys
 import threading
-import time
 from dotenv import load_dotenv
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Import the web interface
+from web_interface import app as web_app
 
 # Load environment variables
 load_dotenv()
@@ -24,16 +31,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Get configuration from environment variables
-API_HOST = os.getenv('API_HOST', '0.0.0.0')
-API_PORT = os.getenv('API_PORT', '8001')
-WEB_HOST = '0.0.0.0'
-WEB_PORT = '8000'
+BACKEND_HOST = os.getenv('BACKEND_HOST', '0.0.0.0')
+BACKEND_PORT = int(os.getenv('BACKEND_PORT', '8001'))
+WEB_HOST = os.getenv('WEB_HOST', '0.0.0.0')
+WEB_PORT = int(os.getenv('WEB_PORT', '8000'))
 
 def run_backend():
     """Run the backend API."""
-    logger.info(f"Starting backend API on {API_HOST}:{API_PORT}")
+    logger.info(f"Starting backend API on {BACKEND_HOST}:{BACKEND_PORT}")
     try:
-        subprocess.run(["python", "run.py"], check=True)
+        subprocess.run([
+            "python", "run.py",
+            "--host", BACKEND_HOST,
+            "--port", str(BACKEND_PORT)
+        ], check=True)
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running backend API: {e}")
     except KeyboardInterrupt:
@@ -41,25 +52,20 @@ def run_backend():
 
 def run_web_interface():
     """Run the web interface."""
+    import uvicorn
     logger.info(f"Starting web interface on {WEB_HOST}:{WEB_PORT}")
     try:
-        subprocess.run(["python", "web_interface.py"], check=True)
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Error running web interface: {e}")
+        uvicorn.run(web_app, host=WEB_HOST, port=WEB_PORT)
     except KeyboardInterrupt:
         logger.info("Web interface stopped by user")
 
 if __name__ == "__main__":
-    logger.info("Starting Web Chatbot")
+    logger.info("Starting Memory Chatbot")
     
-    # Start backend API in a separate thread
+    # Start the backend API in a separate thread
     backend_thread = threading.Thread(target=run_backend)
     backend_thread.daemon = True
     backend_thread.start()
     
-    # Wait for backend API to start
-    logger.info("Waiting for backend API to start...")
-    time.sleep(5)
-    
-    # Run web interface in the main thread
+    # Run the web interface in the main thread
     run_web_interface() 

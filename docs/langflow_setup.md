@@ -41,11 +41,20 @@ You can run LangFlow using the provided script:
 python run_langflow.py
 ```
 
-Or directly with the LangFlow CLI:
+This script performs the following actions:
+1. Registers custom tools with LangFlow (Budget & Timeline Tool, Store Lead Tool)
+2. Configures LangFlow with the appropriate host and port settings
+3. Starts the LangFlow server
+
+The script automatically handles environment variables and logging, making it the recommended way to run LangFlow for this project.
+
+Alternatively, you can run LangFlow directly with the LangFlow CLI:
 
 ```bash
 langflow run --host 0.0.0.0 --port 7860
 ```
+
+However, this method won't register the custom tools automatically.
 
 Once LangFlow is running, you can access the UI at:
 

@@ -115,4 +115,7 @@ simple_llm_chatbot_v3/
 - [2025-03-06] Created dedicated web interface for Presales Chatbot with automatic tool integration
 - [2025-03-06] Implemented lead information extraction from conversation context
 - [2025-03-06] Added run_presales_chatbot.py script to run both backend API and presales web interface
-- [2025-03-06] Updated documentation with details about the presales chatbot web interface 
+- [2025-03-06] Updated documentation with details about the presales chatbot web interface
+- [2025-03-06] Cleaned up project by removing unused files, Python cache directories, and temporary files
+- [2025-03-06] Updated documentation to include detailed information about all run scripts and their usage
+- [2025-03-06] Added comprehensive development journey documentation to chronicle the project's evolution, challenges, and solutions 
